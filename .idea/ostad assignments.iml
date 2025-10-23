@@ -9,6 +9,9 @@
       <excludeFolder url="file://$MODULE_DIR$/ostad_module16_assignment/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module16_assignment/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module16_assignment/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module17_assignment(BMI calculator)/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module17_assignment(BMI calculator)/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module17_assignment(BMI calculator)/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
