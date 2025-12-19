@@ -1,72 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../../data/models/task_model.dart';
-import '../../data/services/network_caller.dart';
-import '../../data/utils/urls.dart';
+import '../providers/completed_task_list_provider.dart';
 import '../widgets/CenteredCircularProgress.dart';
 import '../widgets/snack_bar_message.dart';
 import '../widgets/taskcard.dart';
 
-class CompletedTaskListScreen extends StatefulWidget {
+class CompletedTaskListScreen extends StatelessWidget {
   const CompletedTaskListScreen({super.key});
 
   @override
-  State<CompletedTaskListScreen> createState() => _CompletedTaskListScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => CompletedTaskListProvider()
+        ..getCompletedTaskList(),
+      child: const _CompletedTaskListView(),
+    );
+  }
 }
 
-class _CompletedTaskListScreenState extends State<CompletedTaskListScreen> {
-  bool _getCompletedTaskListInProgress = false;
-
-  List<TaskModel> _completedTaskList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _getCompletedTaskList();
-  }
+class _CompletedTaskListView extends StatelessWidget {
+  const _CompletedTaskListView();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Visibility(
-        visible: _getCompletedTaskListInProgress == false,
-        replacement: CenteredCircularProgress(),
-        child: ListView.separated(
-          itemCount: _completedTaskList.length,
-          itemBuilder: (context, index) {
-            return TaskCard(
-              taskModel: _completedTaskList[index],
-              refreshList: () {
-                _getCompletedTaskList();
-              },
-            );
-          },
-          separatorBuilder: (context, index) {
-            return SizedBox(height: 8);
-          },
-        ),
+      body: Consumer<CompletedTaskListProvider>(
+        builder: (context, provider, _) {
+          if (provider.loading) {
+            return const CenteredCircularProgress();
+          }
+
+          if (provider.errorMessage != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showSnackBarMessage(context, provider.errorMessage!);
+            });
+          }
+
+          return ListView.separated(
+            itemCount: provider.taskList.length,
+            itemBuilder: (context, index) {
+              return TaskCard(
+                taskModel: provider.taskList[index],
+                refreshList: provider.getCompletedTaskList,
+              );
+            },
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+          );
+        },
       ),
     );
-  }
-
-  Future<void> _getCompletedTaskList() async {
-    _getCompletedTaskListInProgress = true;
-    setState(() {});
-    final NetworkResponse response = await NetworkCaller.getRequest(
-      Urls.completedTasksUrl,
-    );
-
-    if (response.isSuccess) {
-      List<TaskModel> list = [];
-      for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskModel.fromJson(jsonData));
-      }
-      _completedTaskList = list;
-    } else {
-      showSnackBarMessage(context, response.errorMessage);
-    }
-
-    _getCompletedTaskListInProgress = false;
-    setState(() {});
   }
 }

@@ -21,6 +21,9 @@
       <excludeFolder url="file://$MODULE_DIR$/ostad_module20_assignment(music player)/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module20_assignment(music player)/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module20_assignment(music player)/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module21_assignment(taskmanager)/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module21_assignment(taskmanager)/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module21_assignment(taskmanager)/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
