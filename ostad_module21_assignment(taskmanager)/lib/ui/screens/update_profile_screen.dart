@@ -1,152 +1,106 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
-import '../../data/models/user_model.dart';
-import '../../data/services/network_caller.dart';
-import '../../data/utils/urls.dart';
 import '../controllers/auth_controller.dart';
+import '../providers/update_profile_provider.dart';
 import '../widgets/CenteredCircularProgress.dart';
 import '../widgets/photo_picker.dart';
 import '../widgets/screen_background.dart';
 import '../widgets/snack_bar_message.dart';
 import '../widgets/tm_app_bar.dart';
 
-class UpdateProfileScreen extends StatefulWidget {
+class UpdateProfileScreen extends StatelessWidget {
   const UpdateProfileScreen({super.key});
 
   static const String name = '/update-profile';
 
   @override
-  State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => UpdateProfileProvider(),
+      child: const _UpdateProfileView(),
+    );
+  }
 }
 
-class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
-  final TextEditingController _emailTEController = TextEditingController();
-  final TextEditingController _firstNameTEController = TextEditingController();
-  final TextEditingController _lastNameTEController = TextEditingController();
-  final TextEditingController _mobileTEController = TextEditingController();
-  final TextEditingController _passwordTEController = TextEditingController();
+class _UpdateProfileView extends StatefulWidget {
+  const _UpdateProfileView();
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  @override
+  State<_UpdateProfileView> createState() => _UpdateProfileViewState();
+}
 
-  final ImagePicker _imagePicker = ImagePicker();
-  XFile? _pickedImage;
-
-  bool _updateProfileInProgress = false;
+class _UpdateProfileViewState extends State<_UpdateProfileView> {
+  final _emailTE = TextEditingController();
+  final _firstNameTE = TextEditingController();
+  final _lastNameTE = TextEditingController();
+  final _mobileTE = TextEditingController();
+  final _passwordTE = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _passwordVisible = false;
-
 
   @override
   void initState() {
     super.initState();
-    final UserModel userModel = AuthController.user!;
-    _emailTEController.text = userModel.email;
-    _firstNameTEController.text = userModel.firstName;
-    _lastNameTEController.text = userModel.lastName;
-    _mobileTEController.text = userModel.mobile;
+    final user = AuthController.user!;
+    _emailTE.text = user.email;
+    _firstNameTE.text = user.firstName;
+    _lastNameTE.text = user.lastName;
+    _mobileTE.text = user.mobile;
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<UpdateProfileProvider>();
+
     return Scaffold(
       appBar: TMAppBar(fromUpdateProfile: true),
       body: ScreenBackground(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 8,
-                children: [
-                  const SizedBox(height: 36),
-                  Text(
-                    'Update Profile',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: PhotoPicker(pickedImage: _pickedImage),
-                  ),
-                  TextFormField(
-                    enabled: false,
-                    controller: _emailTEController,
-                    decoration: InputDecoration(hintText: 'Email'),
-                  ),
-                  TextFormField(
-                    controller: _firstNameTEController,
-                    decoration: InputDecoration(hintText: 'First name'),
-                    validator: (String? value) {
-                      if (value?.trim().isEmpty ?? true) {
-                        return 'Enter first name';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _lastNameTEController,
-                    decoration: InputDecoration(hintText: 'Last name'),
-                    validator: (String? value) {
-                      if (value?.trim().isEmpty ?? true) {
-                        return 'Enter last name';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _mobileTEController,
-                    decoration: InputDecoration(hintText: 'Mobile'),
-                    validator: (String? value) {
-                      if (value?.trim().isEmpty ?? true) {
-                        return 'Enter phone number';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _passwordTEController,
-                    obscureText: !_passwordVisible,
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (String? value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Enter your password';
-                      }
-                      if (value!.length < 6) {
-                        return 'Enter a password more than 6 letters';
-                      }
-                      return null;
-                    },
-                  ),
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 36),
+                Text('Update Profile',
+                    style: Theme.of(context).textTheme.titleLarge),
 
-                  const SizedBox(height: 8),
-                  Visibility(
-                    visible: _updateProfileInProgress == false,
-                    replacement: CenteredCircularProgress(),
-                    child: FilledButton(
-                      onPressed: _onTapUpdateButton,
-                      child: Icon(Icons.arrow_circle_right_outlined),
-                    ),
+                GestureDetector(
+                  onTap: () async {
+                    final image = await ImagePicker()
+                        .pickImage(source: ImageSource.gallery);
+                    if (image != null) {
+                      provider.setImage(image);
+                    }
+                  },
+                  child: PhotoPicker(pickedImage: provider.pickedImage),
+                ),
+
+                TextFormField(
+                  enabled: false,
+                  controller: _emailTE,
+                  decoration: const InputDecoration(hintText: 'Email'),
+                ),
+                _field(_firstNameTE, 'First name'),
+                _field(_lastNameTE, 'Last name'),
+                _field(_mobileTE, 'Mobile'),
+                _passwordField(),
+
+                const SizedBox(height: 8),
+
+                Visibility(
+                  visible: !provider.updating,
+                  replacement: const CenteredCircularProgress(),
+                  child: FilledButton(
+                    onPressed: _onTapUpdate,
+                    child: const Icon(Icons.arrow_circle_right_outlined),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -154,56 +108,47 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     );
   }
 
-  Future<void> _pickImage() async {
-    XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.gallery, imageQuality: 50);
-    if (image != null) {
-      _pickedImage = image;
-      setState(() {});
-    }
+  Widget _field(TextEditingController c, String hint) {
+    return TextFormField(
+      controller: c,
+      decoration: InputDecoration(hintText: hint),
+      validator: (v) => v!.isEmpty ? 'Required' : null,
+    );
   }
 
-  void _onTapUpdateButton() {
-    if (_formKey.currentState!.validate()) {
-      _updateProfile();
-    }
+  Widget _passwordField() {
+    return TextFormField(
+      controller: _passwordTE,
+      obscureText: !_passwordVisible,
+      decoration: InputDecoration(
+        hintText: 'Password',
+        suffixIcon: IconButton(
+          icon: Icon(
+              _passwordVisible ? Icons.visibility : Icons.visibility_off),
+          onPressed: () =>
+              setState(() => _passwordVisible = !_passwordVisible),
+        ),
+      ),
+    );
   }
 
-  Future<void> _updateProfile() async {
-    _updateProfileInProgress = true;
-    setState(() {});
+  Future<void> _onTapUpdate() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text,
-      "firstName": _firstNameTEController.text.trim(),
-      "lastName": _lastNameTEController.text.trim(),
-      "mobile": _mobileTEController.text.trim(),
-    };
+    final provider = context.read<UpdateProfileProvider>();
 
-    if (_passwordTEController.text.isNotEmpty) {
-      requestBody['password'] = _passwordTEController.text;
-    }
-
-    if (_pickedImage != null) {
-      // IMAGE SHOULD LESS THAN 100KB
-      Uint8List imageBytes = await _pickedImage!.readAsBytes();
-      requestBody['photo'] = base64Encode(imageBytes);
-    }
-
-    final NetworkResponse response = await NetworkCaller.postRequest(
-      Urls.updateProfileUrl,
-      body: requestBody,
+    final success = await provider.updateProfile(
+      email: _emailTE.text,
+      firstName: _firstNameTE.text.trim(),
+      lastName: _lastNameTE.text.trim(),
+      mobile: _mobileTE.text.trim(),
+      password: _passwordTE.text,
     );
 
-    _updateProfileInProgress = false;
-    setState(() {});
-
-    if (response.isSuccess) {
-      requestBody['_id'] = AuthController.user!.id;
-      await AuthController.updateUserData(UserModel.fromJson(requestBody));
-      showSnackBarMessage(context, 'Profile has been updated!');
+    if (success) {
+      showSnackBarMessage(context, 'Profile updated!');
     } else {
-      showSnackBarMessage(context, response.errorMessage);
+      showSnackBarMessage(context, provider.errorMessage!);
     }
   }
 }

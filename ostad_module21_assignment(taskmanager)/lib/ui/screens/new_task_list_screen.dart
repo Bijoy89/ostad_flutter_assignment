@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../data/models/Task_count_model.dart';
-import '../../data/models/task_model.dart';
 import '../../data/services/network_caller.dart';
 import '../../data/utils/urls.dart';
+import '../providers/new_task_list_provider.dart';
 import '../widgets/CenteredCircularProgress.dart';
 import '../widgets/snack_bar_message.dart';
 import '../widgets/taskcard.dart';
 import 'add_new_task_screen.dart';
-
 
 class NewTaskListScreen extends StatefulWidget {
   const NewTaskListScreen({super.key});
@@ -18,17 +18,18 @@ class NewTaskListScreen extends StatefulWidget {
 }
 
 class _NewTaskListScreenState extends State<NewTaskListScreen> {
-  bool _getNewTaskListInProgress = false;
   bool _getTaskCountInProgress = false;
-
-  List<TaskModel> _newTaskList = [];
   List<TaskCountModel> _taskCountList = [];
 
   @override
   void initState() {
     super.initState();
-    _getTaskCountList();
-    _getNewTaskList();
+
+    ///  Run provider & API calls after first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getTaskCountList();
+      context.read<New_task_listProvider>().getNewTaskList();
+    });
   }
 
   @override
@@ -36,40 +37,43 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          spacing: 8,
           children: [
-            const SizedBox(),
+            const SizedBox(height: 8),
             _buildTaskSummaryListView(),
-            Visibility(
-              visible: _getNewTaskListInProgress == false,
-              replacement: SizedBox(
-                height: 200,
-                child: CenteredCircularProgress(),
-              ),
-              child: ListView.separated(
-                itemCount: _newTaskList.length,
-                primary: false,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return TaskCard(
-                    taskModel: _newTaskList[index],
-                    refreshList: () {
-                      _getNewTaskList();
-                      _getTaskCountList();
+
+            Consumer<New_task_listProvider>(
+              builder: (context, provider, _) {
+                return Visibility(
+                  visible: !provider.getNewTasklistINProgress,
+                  replacement: const SizedBox(
+                    height: 200,
+                    child: CenteredCircularProgress(),
+                  ),
+                  child: ListView.separated(
+                    itemCount: provider.newTaskList.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return TaskCard(
+                        taskModel: provider.newTaskList[index],
+                        refreshList: () {
+                          provider.getNewTaskList();
+                          _getTaskCountList();
+                        },
+                      );
                     },
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return SizedBox(height: 8);
-                },
-              ),
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  ),
+                );
+              },
             ),
           ],
         ),
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: _onTapAddNewTaskButton,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -82,30 +86,30 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     return SizedBox(
       height: 60,
       child: Visibility(
-        visible: _getTaskCountInProgress == false,
-        replacement: CenteredCircularProgress(),
+        visible: !_getTaskCountInProgress,
+        replacement: const CenteredCircularProgress(),
         child: ListView.builder(
-          itemCount: _taskCountList.length,
           scrollDirection: Axis.horizontal,
+          itemCount: _taskCountList.length,
           itemBuilder: (context, index) {
             return Card(
               elevation: 0,
-              color: Colors.white,
-              margin: EdgeInsets.only(left: 8),
+              margin: const EdgeInsets.only(left: 8),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
+                  horizontal: 16,
                   vertical: 8,
                 ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       _taskCountList[index].sum.toString(),
-                      style: TextTheme.of(context).titleMedium,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
                       _taskCountList[index].id,
-                      style: TextTheme.of(context).labelSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                   ],
                 ),
@@ -117,45 +121,20 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     );
   }
 
-  Future<void> _getNewTaskList() async {
-    _getNewTaskListInProgress = true;
-    setState(() {});
-    final NetworkResponse response = await NetworkCaller.getRequest(
-      Urls.newTasksUrl,
-    );
-
-    if (response.isSuccess) {
-      List<TaskModel> list = [];
-      for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskModel.fromJson(jsonData));
-      }
-      _newTaskList = list;
-    } else {
-      showSnackBarMessage(context, response.errorMessage);
-    }
-
-    _getNewTaskListInProgress = false;
-    setState(() {});
-  }
-
   Future<void> _getTaskCountList() async {
-    _getTaskCountInProgress = true;
-    setState(() {});
-    final NetworkResponse response = await NetworkCaller.getRequest(
-      Urls.taskCountUrl,
-    );
+    setState(() => _getTaskCountInProgress = true);
+
+    final NetworkResponse response =
+    await NetworkCaller.getRequest(Urls.taskCountUrl);
 
     if (response.isSuccess) {
-      List<TaskCountModel> list = [];
-      for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskCountModel.fromJson(jsonData));
-      }
-      _taskCountList = list;
+      _taskCountList = (response.body['data'] as List)
+          .map((e) => TaskCountModel.fromJson(e))
+          .toList();
     } else {
       showSnackBarMessage(context, response.errorMessage);
     }
 
-    _getTaskCountInProgress = false;
-    setState(() {});
+    setState(() => _getTaskCountInProgress = false);
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../data/services/network_caller.dart';
 import '../../data/utils/urls.dart';
+import '../providers/new_task_list_provider.dart';
 import '../widgets/screen_background.dart';
 import '../widgets/snack_bar_message.dart';
 import '../widgets/tm_app_bar.dart';
@@ -109,6 +111,9 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
 
     if (response.isSuccess) {
       _clearTextFields();
+      context.read<New_task_listProvider>().getNewTaskList();
+
+
       showSnackBarMessage(context, 'New task added!');
     } else {
       showSnackBarMessage(context, response.errorMessage);
@@ -118,6 +123,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   void _clearTextFields() {
     _titleTEController.clear();
     _descriptionTEController.clear();
+
   }
 
   @override
