@@ -24,6 +24,15 @@
       <excludeFolder url="file://$MODULE_DIR$/ostad_module21_assignment(taskmanager)/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module21_assignment(taskmanager)/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module21_assignment(taskmanager)/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module25_assignment(livescoreapp)/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module25_assignment(livescoreapp)/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module25_assignment(livescoreapp)/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module27_assignment(googlemap&amp;geolocator)/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module27_assignment(googlemap&amp;geolocator)/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module27_assignment(googlemap&amp;geolocator)/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module31_assignment(youtube lite)/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module31_assignment(youtube lite)/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module31_assignment(youtube lite)/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
