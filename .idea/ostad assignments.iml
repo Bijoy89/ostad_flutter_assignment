@@ -33,6 +33,12 @@
       <excludeFolder url="file://$MODULE_DIR$/ostad_module31_assignment(youtube lite)/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module31_assignment(youtube lite)/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module31_assignment(youtube lite)/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module33_assignments(unit converter)/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module33_assignments(unit converter)/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module33_assignments(unit converter)/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module34_assignement(Expense Tracker app)/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module34_assignement(Expense Tracker app)/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module34_assignement(Expense Tracker app)/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
