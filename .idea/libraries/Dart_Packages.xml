@@ -684,6 +684,7 @@
           <value>
             <list>
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.0.2/lib" />
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.2.0/lib" />
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.1.0/lib" />
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.0.0/lib" />
             </list>
@@ -853,6 +854,7 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.0.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.0.2/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.1.0/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.2.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/web-1.1.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/webview_flutter-4.13.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/webview_flutter_android-4.10.13/lib" />

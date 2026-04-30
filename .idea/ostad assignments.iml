@@ -39,6 +39,9 @@
       <excludeFolder url="file://$MODULE_DIR$/ostad_module34_assignement(Expense Tracker app)/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module34_assignement(Expense Tracker app)/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/ostad_module34_assignement(Expense Tracker app)/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module36_assignment(chat app)/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module36_assignment(chat app)/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/ostad_module36_assignment(chat app)/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
